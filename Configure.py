@@ -8,7 +8,7 @@
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
 
-int_filepath = ""
+int_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/imbp.xlsx"
 
 # =============================================
 
@@ -45,7 +45,7 @@ icols = [
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
 
-amc_filepath = ""
+amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/ambp.xlsx"
 
 # =============================================
 
@@ -86,4 +86,8 @@ week = {
     'Saturday' : 6,
     'Sunday' : 7
 }
+
+time_col_start = 6
+time_col_end = 18
+meeting_preference = 5
 
