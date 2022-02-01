@@ -12,7 +12,7 @@ def data_preprocessing(conv_data, filetype):
         dcols = acols
 
     # Removing NAN rows from Training Time
-    conv_data = conv_data[conv_data[dcols[0]] != 'None']
+    #conv_data = conv_data[conv_data[dcols[0]] != 'None']
 
     # Replacing Meeting Preferences with quantitative Values
     # 1 - No Preference
@@ -82,7 +82,8 @@ class GFG:
 
             if self.bpm(i,matchR, seen):
                 result += 1
-        return result
+        print(matchR)
+        return matchR
 
 
 
@@ -94,6 +95,24 @@ def main():
     non_native = data_preprocessing(int_data,"i")
     native = data_preprocessing(amc_data,"a")
 
+    # ns = open("/Users/adharvan/PycharmProjects/ConvoPartners/ns.txt", 'w+')
+    # nns = open("/Users/adharvan/PycharmProjects/ConvoPartners/nns.txt", 'w+')
+
+    ns_em = np.array(native["Email Address"])
+    nns_em = np.array(non_native["Email Address"])
+    #
+    # count = 0
+    # for i in non_native["Email Address"]:
+    #     nns.writelines( str(count) + " - " + str(i) + "\n")
+    #     count += 1
+    #
+    # count = 0
+    # for i in native["Email Address"]:
+    #     ns.writelines(str(count) + " - " + str(i) + "\n")
+    #     count += 1
+    #
+    # ns.close()
+    # nns.close()
     non_native_count = non_native.shape[0]
     native_count = native.shape[0]
 
@@ -120,9 +139,20 @@ def main():
     for i in range(non_native_count):
         for a in possibility[i]:
             bp_graph[i][int(a)] = 1
-
+    print(1)
     g = GFG(bp_graph)
-    print(g.maxBPM())
+    res = np.array(g.maxBPM())
+    results = open("/Users/adharvan/PycharmProjects/ConvoPartners/results.txt", 'w+')
+    for i in range(len(nns_em)):
+        if(res[i] != -1):
+            temp = str(ns_em[i]) + "   -   " + str(nns_em[res[i]] + "\n")
+            results.writelines(temp)
+
+    results.close()
+    print(sorted(res))
+
+
+
 
 
 if __name__ == "__main__":
