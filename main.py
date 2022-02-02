@@ -102,23 +102,21 @@ def main():
     # ns = open("/Users/adharvan/PycharmProjects/ConvoPartners/ns.txt", 'w+')
     # nns = open("/Users/adharvan/PycharmProjects/ConvoPartners/nns.txt", 'w+')
 
-    ns_em = np.array(native["Email Address"])
-    nns_em = np.array(non_native["Email Address"])
-    #
-    # count = 0
-    # for i in non_native["Email Address"]:
-    #     nns.writelines( str(count) + " - " + str(i) + "\n")
-    #     count += 1
-    #
-    # count = 0
-    # for i in native["Email Address"]:
-    #     ns.writelines(str(count) + " - " + str(i) + "\n")
-    #     count += 1
-    #
-    # ns.close()
-    # nns.close()
+    ns_em = np.array(native[acols[2]])
+    ns_fn = np.array(native[acols[3]])
+    ns_uin = np.array(native[acols[4]])
+    ns_md = np.array(native[acols[5]])
+    ns_ts = np.array(native["Time Slots"])
+    nns_em = np.array(non_native[icols[2]])
+    nns_fn = np.array(non_native[icols[3]])
+    nns_uin = np.array(non_native[icols[4]])
+    nns_md = np.array(non_native[icols[5]])
+    nns_ts = np.array(non_native["Time Slots"])
     non_native_count = non_native.shape[0]
     native_count = native.shape[0]
+
+
+
 
 
     # Each row is set of americans compatible with foreigners. Rows = International Columns = Americans
@@ -143,14 +141,84 @@ def main():
     for i in range(non_native_count):
         for a in possibility[i]:
             bp_graph[i][int(a)] = 1
-    print(1)
+
     g = GFG(bp_graph)
     res = np.array(g.maxBPM())
+
     results = open("/Users/adharvan/PycharmProjects/ConvoPartners/results.txt", 'w+')
+    wb = Workbook()
+    sheet = wb.add_sheet('Matches')
+
+    style = xlwt.XFStyle()
+    font = xlwt.Font()
+    font.name = 'Georgia'
+    font.bold = True
+    font.color_index = 4
+    font.height = 280
+    style.font = font
+    sheet.write(0, 0,'NNS - First and Last Name',style)
+    sheet.write(0, 1, 'NNS - Email',style)
+    sheet.write(0, 2, 'NNS - UIN',style)
+    sheet.write(0, 3, 'NS - First and Last Name',style)
+    sheet.write(0, 4, 'NS - Email',style)
+    sheet.write(0, 5, 'NS - UIN',style)
+    sheet.write(0, 6, 'Modality', style)
+    sheet.write(0, 7, 'Available Meeting Times',style)
+
+    sheet.col(0).width = 256 * 40
+    sheet.col(1).width = 256 * 30
+    sheet.col(2).width = 256 * 15
+    sheet.col(3).width = 256 * 40
+    sheet.col(4).width = 256 * 30
+    sheet.col(5).width = 256 * 15
+    sheet.col(6).width = 256 * 30
+    sheet.col(7).width = 256 * 150
+
+
+    sheet.row(0).height = 256*40
+    style1 = xlwt.XFStyle()
+    font1 = xlwt.Font()
+    font1.name = 'Georgia'
+    font1.bold = False
+    font1.color_index = 4
+    font1.height = 230
+    style1.font = font1
+    rownum = 1
     for i in range(len(nns_em)):
         if(res[i] != -1):
-            temp = str(ns_em[i]) + "   -   " + str(nns_em[res[i]] + "\n")
-            results.writelines(temp)
+            sheet.write(rownum, 0, nns_fn[res[i]],style1)
+            sheet.write(rownum, 1, nns_em[res[i]],style1)
+            sheet.write(rownum, 2, str(nns_uin[res[i]]),style1)
+            sheet.write(rownum, 3, ns_fn[i],style1)
+            sheet.write(rownum, 4, ns_em[i],style1)
+            sheet.write(rownum, 5, str(ns_uin[i]),style1)
+            if(nns_md[res[i]] == 1 and ns_md[i] == 1):
+                sheet.write(rownum, 6, "No Meeting Preference",style1)
+            elif((nns_md[res[i]] == 2 and ns_md[i] == 2) or (nns_md[res[i]] == 2 and ns_md[i] == 1) or (nns_md[res[i]] == 1 and ns_md[i] == 2)):
+                sheet.write(rownum, 6, "In-person Meeting Preferred",style1)
+            elif ((nns_md[res[i]] == 3 and ns_md[i] == 3) or (nns_md[res[i]] == 1 and ns_md[i] == 3) or (nns_md[res[i]] == 3 and ns_md[i] == 1)):
+                sheet.write(rownum, 6, "Zoom Meeting Preferred",style1)
+
+            times = set(ns_ts[i]).intersection(set(nns_ts[res[i]]))
+            time_slots = ""
+            times = sorted(times)
+            for t in times:
+                t = t -1
+                quo = t//12 + 1
+                day = week[quo]
+                rem = t%12 + 9
+                if(rem > 12):
+                    time = str(rem - 12) + " PM" + " - " + str(rem - 11) + " PM    "
+                else:
+                    time = str(rem) + " AM" + ' - ' + str(rem) + " AM    "
+                time_slots += str(day) + " " + str(time) + "\n"
+
+            sheet.write(rownum, 7, str(time_slots),style1)
+            sheet.row(rownum).height = 256 * 30
+            rownum += 1
+
+    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/matches.xls')
+
 
     results.close()
     print(sorted(res))
