@@ -8,7 +8,7 @@
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
 
-int_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/imbp.xlsx"
+int_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NNS_InputFile.xlsx"
 
 # =============================================
 
@@ -45,7 +45,7 @@ icols = [
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
 
-amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/ambp.xlsx"
+amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NS_InputFile(1).xlsx"
 
 # =============================================
 

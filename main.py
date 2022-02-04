@@ -65,7 +65,7 @@ class GFG:
 
     def bpm(self, u, matchR, seen):
 
-        for v in range(self.rows):
+        for v in range(self.cols):
 
             if self.graph[u][v] and seen[v] == False:
                 seen[v] = True
@@ -86,7 +86,7 @@ class GFG:
 
             if self.bpm(i,matchR, seen):
                 result += 1
-        print(matchR)
+        print(len(matchR))
         return matchR
 
 
@@ -159,20 +159,24 @@ def main():
     sheet.write(0, 0,'NNS - First and Last Name',style)
     sheet.write(0, 1, 'NNS - Email',style)
     sheet.write(0, 2, 'NNS - UIN',style)
-    sheet.write(0, 3, 'NS - First and Last Name',style)
-    sheet.write(0, 4, 'NS - Email',style)
-    sheet.write(0, 5, 'NS - UIN',style)
-    sheet.write(0, 6, 'Modality', style)
-    sheet.write(0, 7, 'Available Meeting Times',style)
+    sheet.write(0, 3, 'NNS - Modality', style)
+    sheet.write(0, 4, 'NS - First and Last Name',style)
+    sheet.write(0, 5, 'NS - Email',style)
+    sheet.write(0, 6, 'NS - UIN',style)
+    sheet.write(0, 7, 'NS - Modality', style)
+    sheet.write(0, 8, 'Modality', style)
+    sheet.write(0, 9, 'Available Meeting Times',style)
 
     sheet.col(0).width = 256 * 40
     sheet.col(1).width = 256 * 30
     sheet.col(2).width = 256 * 15
-    sheet.col(3).width = 256 * 40
-    sheet.col(4).width = 256 * 30
-    sheet.col(5).width = 256 * 15
-    sheet.col(6).width = 256 * 30
-    sheet.col(7).width = 256 * 150
+    sheet.col(3).width = 256 * 30
+    sheet.col(4).width = 256 * 40
+    sheet.col(5).width = 256 * 30
+    sheet.col(6).width = 256 * 15
+    sheet.col(7).width = 256 * 30
+    sheet.col(8).width = 256 * 30
+    sheet.col(9).width = 256 * 150
 
 
     sheet.row(0).height = 256*40
@@ -184,20 +188,24 @@ def main():
     font1.height = 230
     style1.font = font1
     rownum = 1
-    for i in range(len(nns_em)):
+    matched_nns = []
+    matched_ns = []
+    for i in range(len(ns_em)):
         if(res[i] != -1):
             sheet.write(rownum, 0, nns_fn[res[i]],style1)
             sheet.write(rownum, 1, nns_em[res[i]],style1)
             sheet.write(rownum, 2, str(nns_uin[res[i]]),style1)
-            sheet.write(rownum, 3, ns_fn[i],style1)
-            sheet.write(rownum, 4, ns_em[i],style1)
-            sheet.write(rownum, 5, str(ns_uin[i]),style1)
+            sheet.write(rownum, 3, str(nns_md[res[i]]), style1)
+            sheet.write(rownum, 4, ns_fn[i],style1)
+            sheet.write(rownum, 5, ns_em[i],style1)
+            sheet.write(rownum, 6, str(ns_uin[i]),style1)
+            sheet.write(rownum, 7, str(ns_md[i]), style1)
             if(nns_md[res[i]] == 1 and ns_md[i] == 1):
-                sheet.write(rownum, 6, "No Meeting Preference",style1)
+                sheet.write(rownum, 8, "No Meeting Preference",style1)
             elif((nns_md[res[i]] == 2 and ns_md[i] == 2) or (nns_md[res[i]] == 2 and ns_md[i] == 1) or (nns_md[res[i]] == 1 and ns_md[i] == 2)):
-                sheet.write(rownum, 6, "In-person Meeting Preferred",style1)
+                sheet.write(rownum, 8, "In-person Meeting Preferred",style1)
             elif ((nns_md[res[i]] == 3 and ns_md[i] == 3) or (nns_md[res[i]] == 1 and ns_md[i] == 3) or (nns_md[res[i]] == 3 and ns_md[i] == 1)):
-                sheet.write(rownum, 6, "Zoom Meeting Preferred",style1)
+                sheet.write(rownum, 8, "Zoom Meeting Preferred",style1)
 
             times = set(ns_ts[i]).intersection(set(nns_ts[res[i]]))
             time_slots = ""
@@ -213,15 +221,35 @@ def main():
                     time = str(rem) + " AM" + ' - ' + str(rem) + " AM    "
                 time_slots += str(day) + " " + str(time) + "\n"
 
-            sheet.write(rownum, 7, str(time_slots),style1)
+            sheet.write(rownum, 9, str(time_slots),style1)
             sheet.row(rownum).height = 256 * 30
+            matched_ns.append(ns_em[i])
+            matched_nns.append(nns_em[res[i]])
             rownum += 1
 
-    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/matches.xls')
+    sheet2 = wb.add_sheet('Not Matched')
+
+    sheet2.write(0, 0, 'Non Native Speakers', style)
+    sheet2.write(0, 1, 'Native Speakers', style)
+
+    nns_dif = set(nns_em) - set(matched_nns)
+    ns_dif = set(ns_em) - set(matched_ns)
+    rownum = 1
+    for i in nns_dif:
+        sheet2.write(rownum, 0, str(i), style1)
+        rownum += 1
+    rownum = 1
+    for i in ns_dif:
+        sheet2.write(rownum, 1, str(i), style1)
+        rownum += 1
+
+
+    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/matches_final.xls')
 
 
     results.close()
     print(sorted(res))
+    print(set(nns_em) - set(matched_nns))
 
 
 
