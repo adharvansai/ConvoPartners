@@ -7,7 +7,7 @@
 # =============================================
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
-
+#Internation Students/ Non native
 int_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NNS_InputFile.xlsx"
 
 # =============================================
@@ -44,15 +44,14 @@ icols = [
 # =============================================
 
 # File path of the processed excel sheet according to the below given instruction set. Please include .xlsx in the file path
-
-amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NS_InputFile(1).xlsx"
+# American/ Native
+amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NS_InputFile.xlsx"
 
 # =============================================
 
 # Please make sure the names of the columns are correctly spelled according to the data sheets
 
 acols = [
-    'Training Timestamp',
     'Timestamp',
     'Email Address',
     'First and Last Name',
@@ -69,7 +68,8 @@ acols = [
     'What times are you available? [5PM]',
     'What times are you available? [6PM]',
     'What times are you available? [7PM]',
-    'What times are you available? [8PM]',
+    'What times are you available? [8PM]','Training Timestamp',
+
     # -- '[Conversation Partnership (10 weekly conversations; one half-hour per week)]'
 ]
 

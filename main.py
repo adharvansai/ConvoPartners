@@ -145,7 +145,7 @@ def main():
     g = GFG(bp_graph)
     res = np.array(g.maxBPM())
 
-    results = open("/Users/adharvan/PycharmProjects/ConvoPartners/results.txt", 'w+')
+    results = open("results.txt", 'w+')
     wb = Workbook()
     sheet = wb.add_sheet('Matches')
 
@@ -244,7 +244,7 @@ def main():
         rownum += 1
 
 
-    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/matches_final.xls')
+    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/ConvoPartner_Matches_Spring_2023_2.xls')
 
 
     results.close()
