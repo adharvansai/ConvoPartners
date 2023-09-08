@@ -4,10 +4,6 @@ from Configure import icols,acols, int_filepath, amc_filepath, week, time_col_st
 import xlwt
 from xlwt import Workbook
 
-
-
-
-
 def data_preprocessing(conv_data, filetype):
 
     if(filetype == 'i'):
@@ -25,10 +21,11 @@ def data_preprocessing(conv_data, filetype):
     conv_data[dcols[5]] = conv_data[dcols[5]].replace(to_replace ='.*No [pP]reference.*', value = 1, regex = True)
     conv_data[dcols[5]] = conv_data[dcols[5]].replace(to_replace ='.*In-person.*', value = 2, regex = True)
     conv_data[dcols[5]] = conv_data[dcols[5]].replace(to_replace ='.*[zZ]oom.*', value = 3, regex = True)
+    filtered_data = conv_data[conv_data[dcols[5]].isin([1, 2, 3])]
 
     # Seperating Time data and Individual information
-    time_data = np.array(conv_data[dcols[time_col_start:time_col_end]])
-    ind_data = conv_data[dcols[:time_col_start]]
+    time_data = np.array(filtered_data[dcols[time_col_start:time_col_end]])
+    ind_data = filtered_data[dcols[:time_col_start]]
 
     #Adding a new column to individual data to store timings
 
@@ -36,25 +33,24 @@ def data_preprocessing(conv_data, filetype):
 
     total_records = ind_data.shape[0]
     for record in range(total_records):
-        #print(record)
         slots = []
         time_index = 0
         for time in range(time_col_end - time_col_start):
-            #print(time)
             time_index += 1
-            days = str(time_data[record][time]).split(",")
-
+            days = str(time_data[record][time]).replace(";", ",").split(",")
             if(days[0] != "nan"):
-                #print("one11")
                 for d in days:
                     d = d.strip()
-                    slot_value = 12*(week[d] -1) + time_index
+                    try:
+                        slot_value = 12 * (week[d] - 1) + time_index
+                    except KeyError as e:
+                        print(f"Debug Info: {time_data[record]} KeyError triggered. {days} Value of d: {d}, Value of time_index: {time_index}")
+                        raise e
                     slots.append(slot_value)
-        #print(slots)
         time_slots.append(slots)
-    ind_data["Time Slots"] = time_slots
-
-    return ind_data
+    time_slots_df = pd.DataFrame({'Time Slots': time_slots})
+    combined_data = pd.concat([ind_data.reset_index(drop=True), time_slots_df.reset_index(drop=True)], axis=1)
+    return combined_data
 
 class GFG:
     def __init__(self, graph):
@@ -134,7 +130,7 @@ def main():
                     matches.append(j)
 
         possibility.append(sorted(matches))
-    possibility = np.array(possibility)
+    # possibility = np.array(possibility)
 
     # Edmond Matrix with Non-Native speakers are rows and Native speakers as column
     bp_graph = np.array([[0]*native_count]*non_native_count)
@@ -195,11 +191,13 @@ def main():
             sheet.write(rownum, 0, nns_fn[res[i]],style1)
             sheet.write(rownum, 1, nns_em[res[i]],style1)
             sheet.write(rownum, 2, str(nns_uin[res[i]]),style1)
-            sheet.write(rownum, 3, str(nns_md[res[i]]), style1)
+            sheet.write(rownum, 3,
+                        {1: 'No Preference', 2: 'In person', 3: 'Zoom'}.get(nns_md[res[i]], str(nns_md[res[i]])),
+                        style1)
             sheet.write(rownum, 4, ns_fn[i],style1)
             sheet.write(rownum, 5, ns_em[i],style1)
             sheet.write(rownum, 6, str(ns_uin[i]),style1)
-            sheet.write(rownum, 7, str(ns_md[i]), style1)
+            sheet.write(rownum, 7, {1: 'No Preference', 2: 'In person', 3: 'Zoom'}.get(ns_md[i], str(ns_md[i])), style1)
             if(nns_md[res[i]] == 1 and ns_md[i] == 1):
                 sheet.write(rownum, 8, "No Meeting Preference",style1)
             elif((nns_md[res[i]] == 2 and ns_md[i] == 2) or (nns_md[res[i]] == 2 and ns_md[i] == 1) or (nns_md[res[i]] == 1 and ns_md[i] == 2)):
@@ -244,7 +242,7 @@ def main():
         rownum += 1
 
 
-    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/ConvoPartner_Matches_Spring_2023_2.xls')
+    wb.save('/Users/adharvan/PycharmProjects/ConvoPartners/ConvoPartner_Matches_Fall_2023.xls')
 
 
     results.close()

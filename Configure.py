@@ -52,6 +52,7 @@ amc_filepath = "/Users/adharvan/PycharmProjects/ConvoPartners/NS_InputFile.xlsx"
 # Please make sure the names of the columns are correctly spelled according to the data sheets
 
 acols = [
+    'Training Timestamp',
     'Timestamp',
     'Email Address',
     'First and Last Name',
@@ -68,7 +69,8 @@ acols = [
     'What times are you available? [5PM]',
     'What times are you available? [6PM]',
     'What times are you available? [7PM]',
-    'What times are you available? [8PM]','Training Timestamp',
+    'What times are you available? [8PM]',
+
 
     # -- '[Conversation Partnership (10 weekly conversations; one half-hour per week)]'
 ]
